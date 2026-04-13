@@ -16,29 +16,10 @@ include/
 share/
 pyvenv.cfg
 
-# Data files (exclude large datasets)
-*.csv
-*.parquet
-data/*.json
-!data/.gitkeep
-
-# Model checkpoints - keep structure but exclude large files
-*.zip
-*.tar.gz
-train/ppo_*.zip
-train/dreamer*/
-train/dreamer_ultimate/
-
-# rl_fx_brain artifacts (too large for git, re-generate from training)
-rl_fx_brain/brains/*/*.onnx
-rl_fx_brain/brains/*/*.joblib
-rl_fx_brain/brains/*/*.json
-
-# Logs
-*.log
-training.log
-output/logs/
-output/metrics/
+# Secrets
+.env
+*.key
+credentials.json
 
 # IDE
 .vscode/
@@ -50,8 +31,3 @@ output/metrics/
 # OS
 .DS_Store
 Thumbs.db
-
-# Secrets
-.env
-*.key
-credentials.json
