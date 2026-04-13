@@ -1,0 +1,160 @@
+# ---------------------------------------------------------------------------
+# v2 FOREX config (7 majors + 22 crosses = 29 instruments).
+#
+# Rationale: v1 forex brain lost on every pair. Root causes we're fixing:
+#   1. Realistic per-instrument spreads (was flat 1.5bp, now 0.8-5.0bp)
+#   2. Minimum hold bars + cooldown (stop ping-ponging)
+#   3. Larger network + longer training (15M steps)
+#   4. Session-aware cost multiplier (off-session bars cost more)
+#   5. Per-instrument normalization (JPY pairs have 100x the price scale
+#      of EUR_USD and were swamping the scaler)
+#   6. Stronger drawdown shaping so policy avoids max-dd stop-outs
+# ---------------------------------------------------------------------------
+
+universe:
+  name: forex
+  instruments:
+    # Majors
+    - EUR_USD
+    - GBP_USD
+    - USD_JPY
+    - USD_CHF
+    - USD_CAD
+    - AUD_USD
+    - NZD_USD
+    # EUR crosses
+    - EUR_GBP
+    - EUR_JPY
+    - EUR_CHF
+    - EUR_CAD
+    - EUR_AUD
+    - EUR_NZD
+    # GBP crosses
+    - GBP_JPY
+    - GBP_CHF
+    - GBP_CAD
+    - GBP_AUD
+    - GBP_NZD
+    # JPY crosses
+    - AUD_JPY
+    - CAD_JPY
+    - CHF_JPY
+    - NZD_JPY
+    # Commodity / minor crosses
+    - AUD_CAD
+    - AUD_CHF
+    - AUD_NZD
+    - NZD_CAD
+    - NZD_CHF
+    - CAD_CHF
+
+data:
+  granularity: H1
+  secondary_granularity: null
+  enable_secondary_tf: false
+  price_type: M
+  years_of_history: 9
+  batch_count: 4500
+  max_retries: 6
+  retry_backoff_seconds: 2.0
+  raw_dir: output/raw/forex
+  features_cache_dir: output/cache/forex
+  keep_raw_data: false
+
+splits:
+  train_frac: 0.72
+  val_frac: 0.14
+  test_frac: 0.14
+  walk_forward_folds: 5
+
+features:
+  lookback: 96
+  returns_horizons: [1, 3, 5, 10, 20]
+  rolling_vol_window: 24
+  atr_window: 14
+  rsi_window: 14
+  macd_fast: 12
+  macd_slow: 26
+  macd_signal: 9
+  adx_window: 14
+  ema_windows: [20, 50, 100, 200]
+  bb_window: 20
+  bb_std: 2.0
+  cci_window: 20
+  stoch_k: 14
+  stoch_d: 3
+  zscore_window: 50
+  normalization: per_instrument
+
+env:
+  action_space: discrete_v1
+  initial_balance: 10000.0
+  risk_per_trade: 0.005           # forex sized smaller than metals
+  max_position_units: 1
+  max_leverage: 20.0
+  max_drawdown_stop: 0.22         # tighter than v1 (was 0.30)
+  use_realistic_costs: true
+  off_session_cost_multiplier: true
+  slippage_bp: 0.0
+  spread_bp_default: 0.0
+  overnight_penalty_bp: 0.2
+  min_hold_bars: 5                # 5 H1 bars = 5 hours minimum
+  cooldown_bars: 3                # 3 H1 bars = 3 hours cooldown
+  inactivity_penalty: 0.0
+  episode_length: 1024
+  random_start: true
+
+reward:
+  w_realized_pnl: 2.0
+  w_unrealized_pnl: 0.05
+  w_transaction_cost: 6.0         # even higher than metals
+  w_drawdown: 0.5
+  w_overtrading: 2.5              # stronger than metals
+  w_duration_penalty: 0.01
+  w_risk_adjusted: 0.05
+  w_clean_exit_bonus: 0.8
+
+training:
+  algorithm: PPO
+  preset: production
+  total_timesteps: 15_000_000     # production target
+  n_envs: 4
+  seed: 2026
+  policy: MlpPolicy
+  policy_kwargs:
+    net_arch: [512, 512, 256]     # bigger than metals (more instruments)
+  ppo:
+    learning_rate: 2.0e-4
+    n_steps: 2048
+    batch_size: 512
+    n_epochs: 10
+    gamma: 0.99
+    gae_lambda: 0.95
+    clip_range: 0.2
+    ent_coef: 0.003
+    vf_coef: 0.5
+    max_grad_norm: 0.5
+  eval_freq: 100000
+  checkpoint_freq: 500000
+  best_model_metric: val_sharpe
+  secondary_metric: val_max_drawdown
+  cluster_mode: shared
+  resume_from: null
+  lr_anneal: true
+
+output:
+  run_name: forex
+  models_dir: output/models/forex
+  checkpoints_dir: output/models/forex/checkpoints
+  brains_dir: output/brains/forex
+  reports_dir: output/reports/forex
+  metrics_dir: output/metrics
+  tensorboard_dir: output/metrics/tensorboard/forex
+  dashboard_state_dir: output/dashboard/state
+
+cleanup:
+  delete_raw_data: true
+  delete_features_cache: true
+  delete_tensorboard_logs: false
+  delete_checkpoints: true
+  keep_sb3_zip: true

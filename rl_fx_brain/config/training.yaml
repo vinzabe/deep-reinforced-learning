@@ -1,0 +1,64 @@
+# ---------------------------------------------------------------------------
+# Global training defaults. These values are used when a universe YAML
+# does not override them explicitly. They document recommended values and
+# act as a single source of truth for cross-universe settings.
+# ---------------------------------------------------------------------------
+
+defaults:
+  device: auto                     # auto | cpu | cuda
+  verbose: 1
+
+logging:
+  level: INFO
+  to_file: true
+  log_dir: output/metrics/logs
+  log_filename_pattern: "{run_name}_{timestamp}.log"
+
+progress:
+  # Dashboard / callbacks will push JSON state snapshots to this file.
+  state_filename: run_state.json
+  csv_scalars_filename: scalars.csv
+  history_filename: history.jsonl
+
+eval_defaults:
+  n_eval_episodes: 10
+  deterministic: true
+
+# Shared-policy guidance: the README explains when shared is preferred and
+# when cluster split helps. Defaults below keep shared on.
+policy_strategy:
+  shared_policy: true
+  allow_cluster_split: true
+  cluster_groups:
+    forex:
+      - EUR_USD
+      - GBP_USD
+      - USD_JPY
+      - USD_CHF
+      - USD_CAD
+      - AUD_USD
+      - NZD_USD
+      - EUR_GBP
+      - EUR_JPY
+      - EUR_CHF
+      - EUR_CAD
+      - EUR_AUD
+      - EUR_NZD
+      - GBP_JPY
+      - GBP_CHF
+      - GBP_CAD
+      - GBP_AUD
+      - GBP_NZD
+      - AUD_JPY
+      - CAD_JPY
+      - CHF_JPY
+      - NZD_JPY
+      - AUD_CAD
+      - AUD_CHF
+      - AUD_NZD
+      - NZD_CAD
+      - NZD_CHF
+      - CAD_CHF
+    metals:
+      - XAU_USD
+      - XAG_USD

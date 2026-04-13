@@ -1,0 +1,20 @@
+# ---------------------------------------------------------------------------
+# Streamlit dashboard configuration. The dashboard reads training state
+# from disk so it works even if training is on a different machine (as
+# long as output/ is shared).
+# ---------------------------------------------------------------------------
+
+dashboard:
+  title: "rl_fx_brain Training Dashboard"
+  refresh_seconds: 5
+  state_dir: output/dashboard/state
+  metrics_dir: output/metrics
+  reports_dir: output/reports
+  brains_dir: output/brains
+  models_dir: output/models
+
+display:
+  moving_average_window: 50
+  max_equity_points: 500
+  theme: "dark"
+  show_tensorboard_command: true

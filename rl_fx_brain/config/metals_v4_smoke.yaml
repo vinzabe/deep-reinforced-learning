@@ -1,0 +1,130 @@
+cleanup:
+  delete_checkpoints: true
+  delete_features_cache: true
+  delete_raw_data: true
+  delete_tensorboard_logs: false
+  keep_sb3_zip: true
+data:
+  batch_count: 4500
+  enable_secondary_tf: false
+  features_cache_dir: output/cache/metals_v4
+  granularity: H1
+  keep_raw_data: false
+  max_retries: 6
+  price_type: M
+  raw_dir: output/raw/metals
+  retry_backoff_seconds: 2.0
+  secondary_granularity: null
+  years_of_history: 7
+env:
+  action_space: discrete_v1
+  cooldown_bars: 8
+  episode_length: 1024
+  inactivity_penalty: 0.0
+  initial_balance: 10000.0
+  max_drawdown_stop: 0.2
+  max_leverage: 10.0
+  max_position_units: 1
+  min_hold_bars: 12
+  off_session_cost_multiplier: true
+  overnight_penalty_bp: 0.15
+  random_start: true
+  risk_per_trade: 0.01
+  slippage_bp: 0.0
+  spread_bp_default: 0.0
+  use_realistic_costs: true
+features:
+  adx_window: 14
+  atr_window: 14
+  bb_std: 2.0
+  bb_window: 20
+  cci_window: 20
+  ema_windows:
+  - 20
+  - 50
+  - 100
+  - 200
+  lookback: 96
+  macd_fast: 12
+  macd_signal: 9
+  macd_slow: 26
+  normalization: per_instrument
+  returns_horizons:
+  - 1
+  - 3
+  - 5
+  - 10
+  - 20
+  rolling_vol_window: 24
+  rsi_window: 14
+  stoch_d: 3
+  stoch_k: 14
+  zscore_window: 50
+output:
+  brains_dir: output/brains/metals_v4
+  checkpoints_dir: output/models/metals_v4/checkpoints
+  dashboard_state_dir: output/dashboard/state
+  metrics_dir: output/metrics
+  models_dir: output/models/metals_v4
+  reports_dir: output/reports/metals_v4
+  run_name: metals_v4
+  tensorboard_dir: output/metrics/tensorboard/metals_v4
+reward:
+  duration_penalty_min_bars: 20
+  min_breakout_atr: 1.5
+  overtrading_daily_budget: 1
+  session_aware_entry: true
+  w_clean_exit_bonus: 1.0
+  w_drawdown: 0.4
+  w_duration_penalty: 0.02
+  w_loss_asymmetry: 0.5
+  w_overtrading: 2.5
+  w_realized_pnl: 2.5
+  w_risk_adjusted: 0.05
+  w_session_alignment: 0.05
+  w_transaction_cost: 6.0
+  w_unrealized_pnl: 0.05
+splits:
+  test_frac: 0.14
+  train_frac: 0.72
+  val_frac: 0.14
+  walk_forward_folds: 5
+training:
+  algorithm: PPO
+  best_model_metric: stability_score
+  checkpoint_freq: 250000
+  cluster_mode: shared
+  early_stop_patience: 15
+  eval_freq: 100000
+  lr_anneal: true
+  n_envs: 2
+  policy: MlpPolicy
+  policy_kwargs:
+    net_arch:
+    - 256
+    - 256
+    - 128
+  ppo:
+    batch_size: 256
+    clip_range: 0.15
+    ent_coef: 0.003
+    gae_lambda: 0.95
+    gamma: 0.99
+    learning_rate: 0.0002
+    max_grad_norm: 0.5
+    n_epochs: 10
+    n_steps: 2048
+    vf_coef: 0.5
+  preset: production
+  resume_from: null
+  secondary_metric: val_max_drawdown
+  seed: 2026
+  total_timesteps: 15000000
+universe:
+  instruments:
+  - XAU_USD
+  - XAG_USD
+  name: metals_v4
+validation:
+  embargo_bars: 200
+  n_walk_forward_folds: 5

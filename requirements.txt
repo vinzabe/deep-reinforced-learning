@@ -1,0 +1,37 @@
+# Deep Reinforcement Learning
+stable-baselines3>=2.0.0
+torch>=2.0.0
+gymnasium>=0.29.0
+
+# Data Processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Trading Platform Integration
+MetaTrader5>=5.0.0
+
+# Utilities
+tqdm>=4.65.0
+shimmy>=2.0.0
+python-dotenv>=1.0.0
+
+# Optional: For data fetching
+yfinance>=0.2.0
+requests>=2.31.0
+
+# Optional: For visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+streamlit>=1.28.0
+
+# Optional: For advanced features
+scikit-learn>=1.3.0
+scipy>=1.11.0
+joblib>=1.3.0
+
+# rl_fx_brain: OANDA data ingestion
+v20>=3.0.0
+
+# rl_fx_brain: ONNX export
+onnx>=1.14.0
+onnxruntime>=1.15.0
