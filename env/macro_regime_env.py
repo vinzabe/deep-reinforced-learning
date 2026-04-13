@@ -223,6 +223,7 @@ class MacroRegimeEnv(gym.Env):
         cost_bp: float = 3.0,
         target_vol: float = 0.02,
         max_drawdown: float = 0.20,
+        fixed_metal: Optional[str] = None,
     ):
         super().__init__()
         self.lookback = lookback
@@ -230,6 +231,7 @@ class MacroRegimeEnv(gym.Env):
         self.cost_bp = cost_bp
         self.target_vol = target_vol
         self.max_dd = max_drawdown
+        self.fixed_metal = fixed_metal
 
         self.metal_names = list(metal_dfs.keys())
         self.n_metals = len(self.metal_names)
@@ -279,7 +281,10 @@ class MacroRegimeEnv(gym.Env):
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
-        self.current_metal = self.np_random.choice(self.metal_names)
+        if self.fixed_metal and self.fixed_metal in self.metal_names:
+            self.current_metal = self.fixed_metal
+        else:
+            self.current_metal = self.np_random.choice(self.metal_names)
         raw = self.raw_dfs[self.current_metal]
         max_start = len(raw) - self.episode_length - self.lookback - 10
         if max_start < self.lookback:

@@ -1,0 +1,30 @@
+============================================================
+ENHANCED MULTI-METAL TRADING V3
+============================================================
+
+Loading metal data...
+  gold        :    6,427 bars  2000-08-30 -> 2026-04-12
+  silver      :    6,429 bars  2000-08-30 -> 2026-04-12
+  copper      :    6,432 bars  2000-08-30 -> 2026-04-12
+  platinum    :    6,455 bars  1997-10-29 -> 2026-04-12
+  palladium   :    6,466 bars  1998-09-28 -> 2026-04-12
+
+Loading macro data...
+  Macro features: (24880, 4)
+
+Creating environments...
+Observation shape: (8, 850)
+Action space: Box(-1.0, 1.0, (1,), float32)
+Using cpu device
+
+Training for 3,000,000 steps...
+---------------------------------
+| rollout/           |          |
+|    ep_len_mean     | 78       |
+|    ep_rew_mean     | -0.158   |
+| time/              |          |
+|    fps             | 72       |
+|    iterations      | 1        |
+|    time_elapsed    | 226      |
+|    total_timesteps | 16384    |
+---------------------------------
