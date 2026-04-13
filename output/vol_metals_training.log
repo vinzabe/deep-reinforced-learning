@@ -1,0 +1,14 @@
+Obs shape: (4, 1546)
+Features: 24
+Using cpu device
+Training vol metals for 2M steps...
+---------------------------------
+| rollout/           |          |
+|    ep_len_mean     | 61.3     |
+|    ep_rew_mean     | 1.52     |
+| time/              |          |
+|    fps             | 60       |
+|    iterations      | 1        |
+|    time_elapsed    | 134      |
+|    total_timesteps | 8192     |
+---------------------------------

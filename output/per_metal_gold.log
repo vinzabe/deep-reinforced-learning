@@ -1,0 +1,64 @@
+Loading data...
+Fitting regime detector...
+Model is not converging.  Current: 77554.69033569616 is not greater than 77554.8800123427. Delta is -0.18967664655065164
+
+============================================================
+TRAINING GOLD
+============================================================
+Obs shape: (4, 3214)
+Using cpu device
+Training for 2,000,000 steps...
+---------------------------------
+| rollout/           |          |
+|    ep_len_mean     | 112      |
+|    ep_rew_mean     | -0.0251  |
+| time/              |          |
+|    fps             | 64       |
+|    iterations      | 1        |
+|    time_elapsed    | 127      |
+|    total_timesteps | 8192     |
+---------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 85.4        |
+|    ep_rew_mean          | 0.328       |
+| time/                   |             |
+|    fps                  | 26          |
+|    iterations           | 2           |
+|    time_elapsed         | 627         |
+|    total_timesteps      | 16384       |
+| train/                  |             |
+|    approx_kl            | 0.010221227 |
+|    clip_fraction        | 0.135       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -1.41       |
+|    explained_variance   | -0.366      |
+|    learning_rate        | 0.0001      |
+|    loss                 | 0.0939      |
+|    n_updates            | 10          |
+|    policy_gradient_loss | -0.0145     |
+|    std                  | 0.983       |
+|    value_loss           | 0.264       |
+-----------------------------------------
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 102         |
+|    ep_rew_mean          | 1.22        |
+| time/                   |             |
+|    fps                  | 22          |
+|    iterations           | 3           |
+|    time_elapsed         | 1099        |
+|    total_timesteps      | 24576       |
+| train/                  |             |
+|    approx_kl            | 0.011081739 |
+|    clip_fraction        | 0.166       |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -1.39       |
+|    explained_variance   | -0.0616     |
+|    learning_rate        | 0.0001      |
+|    loss                 | 0.0569      |
+|    n_updates            | 20          |
+|    policy_gradient_loss | -0.016      |
+|    std                  | 0.964       |
+|    value_loss           | 0.229       |
+-----------------------------------------
