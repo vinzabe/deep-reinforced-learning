@@ -1,0 +1,35 @@
+Daily V4: obs=(4, 2442), features=38
+Using cpu device
+Training daily V4 for 5M steps (Sharpe-adjusted reward, 38 features)...
+---------------------------------
+| rollout/           |          |
+|    ep_len_mean     | 61.3     |
+|    ep_rew_mean     | -7.56    |
+| time/              |          |
+|    fps             | 1313     |
+|    iterations      | 1        |
+|    time_elapsed    | 6        |
+|    total_timesteps | 8192     |
+---------------------------------
+------------------------------------------
+| rollout/                |              |
+|    ep_len_mean          | 113          |
+|    ep_rew_mean          | -15.7        |
+| time/                   |              |
+|    fps                  | 170          |
+|    iterations           | 2            |
+|    time_elapsed         | 96           |
+|    total_timesteps      | 16384        |
+| train/                  |              |
+|    approx_kl            | 0.0036226632 |
+|    clip_fraction        | 0.0288       |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -1.41        |
+|    explained_variance   | -0.0072      |
+|    learning_rate        | 0.0001       |
+|    loss                 | 5.31         |
+|    n_updates            | 10           |
+|    policy_gradient_loss | -0.00438     |
+|    std                  | 0.991        |
+|    value_loss           | 13.1         |
+------------------------------------------

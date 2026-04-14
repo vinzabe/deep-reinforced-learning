@@ -1,0 +1,3 @@
+Hourly V4: obs=(4, 2442), features=38
+Using cpu device
+Training hourly V4 for 5M steps (Sharpe reward, 4096 ep, lr=3e-5, gamma=0.995)...
