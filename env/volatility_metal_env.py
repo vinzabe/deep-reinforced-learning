@@ -113,6 +113,17 @@ class VolatilityMetalEnv(gym.Env):
 
             feats["rsi_14"] = 100 - 100 / (1 + (daily_ret.clip(lower=0).ewm(span=14).mean() / (daily_ret.clip(upper=0).abs().ewm(span=14).mean() + 1e-12)))
 
+            feats["realized_var"] = (daily_ret ** 2).rolling(10).mean()
+            feats["var_ratio"] = feats["realized_var"] / (daily_ret ** 2).rolling(50).mean().fillna(1e-12)
+
+            feats["garman_klass_vol"] = np.sqrt(
+                0.5 * (np.log(h / lo)) ** 2 - (2 * np.log(2) - 1) * (np.log(c / c.shift(1))) ** 2
+            ).rolling(20).mean().fillna(0)
+
+            ema_vol_5 = daily_ret.ewm(span=5).std()
+            ema_vol_20 = daily_ret.ewm(span=20).std()
+            feats["ema_vol_ratio"] = ema_vol_5 / (ema_vol_20 + 1e-12)
+
             if macro_df is not None and not macro_df.empty:
                 times = pd.to_datetime(df["time"])
                 m_aligned = macro_df.reindex(times, method="ffill").fillna(0.0)
@@ -126,6 +137,26 @@ class VolatilityMetalEnv(gym.Env):
 
             next_day_ret = daily_ret.shift(-1)
             self.realized_vols[name] = (daily_ret ** 2).rolling(5).mean().fillna(0).values.astype(np.float32)
+
+        min_len = min(len(df) for df in self.feat_dfs.values())
+        for name in self.feat_dfs:
+            n = min_len
+            gold_vol = self.feat_dfs["gold"]["vol_20"].values[:n] if "gold" in self.feat_dfs else np.zeros(n)
+            silver_vol = self.feat_dfs["silver"]["vol_20"].values[:n] if "silver" in self.feat_dfs else np.zeros(n)
+            copper_vol = self.feat_dfs["copper"]["vol_20"].values[:n] if "copper" in self.feat_dfs else np.zeros(n)
+
+            cross = pd.DataFrame(index=range(n))
+            cross["gold_vol"] = gold_vol
+            cross["silver_vol"] = silver_vol
+            cross["copper_vol"] = copper_vol
+            cross["avg_metal_vol"] = (gold_vol + silver_vol + copper_vol) / 3.0
+            cross["own_vs_avg_vol"] = self.feat_dfs[name]["vol_20"].values[:n] / (cross["avg_metal_vol"].values + 1e-12)
+            cross["vol_momentum"] = self.feat_dfs[name]["vol_5"].values[:n] - self.feat_dfs[name]["vol_20"].values[:n]
+
+            self.feat_dfs[name] = pd.concat(
+                [self.feat_dfs[name].iloc[:n].reset_index(drop=True), cross.reset_index(drop=True)],
+                axis=1,
+            )
 
         sample = self.feat_dfs[self.metal_names[0]]
         self.n_features = sample.shape[1]
