@@ -2137,3 +2137,47 @@ Training for 2,000,000 steps...
 |    std                  | 0.768       |
 |    value_loss           | 8.5         |
 -----------------------------------------
+------------------------------------------
+| rollout/                |              |
+|    ep_len_mean          | 69.6         |
+|    ep_rew_mean          | -6.75e+09    |
+| time/                   |              |
+|    fps                  | 220          |
+|    iterations           | 98           |
+|    time_elapsed         | 3634         |
+|    total_timesteps      | 802816       |
+| train/                  |              |
+|    approx_kl            | 0.0053195576 |
+|    clip_fraction        | 0.0594       |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -1.15        |
+|    explained_variance   | 0            |
+|    learning_rate        | 0.0001       |
+|    loss                 | 6.09e+16     |
+|    n_updates            | 970          |
+|    policy_gradient_loss | 0.00147      |
+|    std                  | 0.768        |
+|    value_loss           | 8e+19        |
+------------------------------------------
+---------------------------------------
+| rollout/                |           |
+|    ep_len_mean          | 75.3      |
+|    ep_rew_mean          | 20        |
+| time/                   |           |
+|    fps                  | 196       |
+|    iterations           | 99        |
+|    time_elapsed         | 4133      |
+|    total_timesteps      | 811008    |
+| train/                  |           |
+|    approx_kl            | 0.0098729 |
+|    clip_fraction        | 0.061     |
+|    clip_range           | 0.2       |
+|    entropy_loss         | -1.15     |
+|    explained_variance   | 0         |
+|    learning_rate        | 0.0001    |
+|    loss                 | 1.22e+17  |
+|    n_updates            | 980       |
+|    policy_gradient_loss | 0.000854  |
+|    std                  | 0.768     |
+|    value_loss           | 1.6e+17   |
+---------------------------------------
