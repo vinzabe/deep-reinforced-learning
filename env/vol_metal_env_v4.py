@@ -155,6 +155,10 @@ class VolMetalEnvV4(gym.Env):
             cross["own_vs_avg_vol"] = self.feat_dfs[name]["vol_20"].values[:n] / (cross["avg_metal_vol"].values + 1e-12)
             cross["vol_momentum"] = self.feat_dfs[name]["vol_5"].values[:n] - self.feat_dfs[name]["vol_20"].values[:n]
             cross["gold_silver_spread"] = gold_ret - silver_ret
+            cross["metal_index_ret"] = (self.feat_dfs["gold"]["ret_5"].values[:n] + self.feat_dfs["silver"]["ret_5"].values[:n] + self.feat_dfs["copper"]["ret_5"].values[:n] + self.feat_dfs["platinum"]["ret_5"].values[:n] + self.feat_dfs["palladium"]["ret_5"].values[:n]) / 5.0
+            own_ret = self.feat_dfs[name]["ret_5"].values[:n]
+            cross["beta_residual"] = own_ret - cross["metal_index_ret"]
+            cross["skew_proxy"] = (self.feat_dfs[name]["range_position"].values[:n] - 0.5) * 2.0
 
             self.feat_dfs[name] = pd.concat(
                 [self.feat_dfs[name].iloc[:n].reset_index(drop=True), cross.reset_index(drop=True)],
@@ -225,22 +229,28 @@ class VolMetalEnvV4(gym.Env):
 
         pos_change = abs(target_pos - self.position)
 
-        current_vol = float(self.feat_dfs[self.current_metal]["vol_20"].iloc[min(self.t, len(self.feat_dfs[self.current_metal]) - 1)])
-        current_vol = max(current_vol, 1e-6)
-
-        vol_scaled_cost = (self.cost_bp / 10000) * (current_vol / 0.01) * pos_change if pos_change > 0.01 else 0.0
-        vol_scaled_cost = min(vol_scaled_cost, 0.01)
+        cost = self.cost_bp / 10000 * pos_change if pos_change > 0.01 else 0.0
 
         bar_return = (next_close - close) / max(close, 1e-12)
+        direction_pnl = target_pos * bar_return * 100
 
-        scaled_pnl = target_pos * bar_return / (current_vol + 1e-8)
+        current_vol = float(self.feat_dfs[self.current_metal]["vol_20"].iloc[min(self.t, len(self.feat_dfs[self.current_metal]) - 1)])
 
-        downside = 0.5 * min(0, scaled_pnl) ** 2
+        vol_change = float(self.feat_dfs[self.current_metal]["vol_ratio_5"].iloc[min(self.t, len(self.feat_dfs[self.current_metal]) - 1)])
+        vol_prediction_reward = 0.0
+        if abs(vol_change) > 0.1:
+            predicted_direction = np.sign(target_pos)
+            if predicted_direction > 0 and vol_change > 0:
+                vol_prediction_reward = 0.003 * abs(vol_change)
+            elif predicted_direction < 0 and vol_change < -0.1:
+                vol_prediction_reward = 0.003 * abs(vol_change)
+            elif abs(vol_change) < 0.05 and abs(target_pos) < 0.2:
+                vol_prediction_reward = 0.001
 
-        var_ratio = float(self.feat_dfs[self.current_metal]["var_ratio"].iloc[min(self.t, len(self.feat_dfs[self.current_metal]) - 1)])
-        vol_premium = float(self.feat_dfs[self.current_metal]["realized_var"].iloc[min(self.t, len(self.feat_dfs[self.current_metal]) - 1)])
-        avg_var = float(self.feat_dfs[self.current_metal]["realized_var"].iloc[max(self.t - 50, 0):min(self.t, len(self.feat_dfs[self.current_metal]))].mean()) if self.t > 50 else vol_premium
-        regime_multiplier = 1.5 if var_ratio > 1.0 else 0.3
+        range_feature = float(self.feat_dfs[self.current_metal]["range_pct"].iloc[min(self.t, len(self.feat_dfs[self.current_metal]) - 1)])
+        vol_risk_premium = 0.0
+        if abs(target_pos) > 0.3 and range_feature > 0.01:
+            vol_risk_premium = 0.0005 * range_feature * 100
 
         hold_penalty = 0.0
         if self.bars_in_trade > 60:
@@ -254,7 +264,7 @@ class VolMetalEnvV4(gym.Env):
         if self.bars_since_trade > 20:
             inactivity_penalty = -0.0003 * min((self.bars_since_trade - 20) / 20, 3.0)
 
-        reward = (scaled_pnl - vol_scaled_cost - downside + hold_penalty + flip_penalty + inactivity_penalty) * regime_multiplier
+        reward = direction_pnl + vol_prediction_reward + vol_risk_premium + hold_penalty + flip_penalty + inactivity_penalty - cost
 
         self.position = target_pos
         if abs(self.position) > 0.01 and self.bars_in_trade == 0:
@@ -283,8 +293,8 @@ class VolMetalEnvV4(gym.Env):
             "drawdown": float(dd),
             "position": float(self.position),
             "metal": self.current_metal,
-            "scaled_pnl": scaled_pnl,
-            "regime_multiplier": regime_multiplier,
+            "scaled_pnl": direction_pnl,
+            "direction_pnl": direction_pnl,
         }
 
         return self._get_obs(), float(reward), done, truncated, info
