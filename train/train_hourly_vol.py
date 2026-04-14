@@ -86,7 +86,7 @@ def main():
             return VolatilityMetalEnv(
                 metal_dfs=metal_dfs,
                 macro_df=macro_df,
-                lookback=64,
+                lookback=32,
                 episode_length=2048,
                 cost_bp=0.5,
                 max_drawdown=0.20,
