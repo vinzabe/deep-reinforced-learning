@@ -1,0 +1,5 @@
+httpx>=0.24
+pytest>=7
+fickling>=0.1.10
+safetensors>=0.4
+torch>=2.0

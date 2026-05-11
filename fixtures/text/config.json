@@ -1,0 +1,6 @@
+{
+  "model_type": "tiny",
+  "hidden_size": 4,
+  "vocab_size": 100,
+  "comment": "this is a fixture for the hf-supply-scanner tests"
+}
